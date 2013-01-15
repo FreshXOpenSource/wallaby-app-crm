@@ -1,0 +1,18 @@
+{
+   "_id": "company",
+   "name": "Company Name",
+   "taxID": "12345/12345",
+   "vatID": "DE12345678",
+   "street": "Street 23",
+   "zip": "2342",
+   "city": "Town",
+   "tel": "+00 1234 567890",
+   "fax": "+00 1234 567891",
+   "email": "test@example.com",
+   "website": "http://example.com",
+   "bankName": "Trust Bank",
+   "blz": "12345678",
+   "kto": "12345678",
+   "iban": "1234 1234 1234 1234 00",
+   "bic": "12345678"
+}

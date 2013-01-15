@@ -1,0 +1,23 @@
+{
+    "settings": {
+        "analysis": { "analyzer": { "string_lowercase": { "tokenizer": "keyword", "filter": "lowercase" }}}
+    },
+    "mappings": {
+        "$dbname$" :  {
+            "properties": {
+                "name" :  {
+                    "type": "multi_field",
+                        "fields" : {
+                            "name": {
+                                "type" : "string"
+                            },
+                            "untouched" : {
+                                "type": "string",
+                                "analyzer": "string_lowercase"
+                            }
+                        }
+                }
+            }
+        }
+    }
+}

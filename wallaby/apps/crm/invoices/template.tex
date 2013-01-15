@@ -1,0 +1,116 @@
+#encoding UTF-8 
+#from Cheetah.NameMapper import NotFound
+#from datetime import date
+\documentclass[11pt]{g-brief2}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{enumerate}
+\usepackage{eurosym}
+\usepackage{rechnung}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\newcommand{\leadingzero}[1]{\ifnum #1<10 0\the#1\else\the#1\fi}
+\newcommand{\todayIV}{\leadingzero{\day}.\leadingzero{\month}.\the\year}
+\newcommand{\workPeriod}{\workPeriodFrom\ -- \workPeriodTo}
+
+%Datum anpassen
+#if $varExists('invoice.invoiceDate')
+    \year=$invoice.invoiceDate[0]
+    \month=$invoice.invoiceDate[1]
+    \day=$invoice.invoiceDate[2]
+#end if
+
+#if $varExists('invoice.workPeriod.fromDate')
+    \newcommand{\workPeriodFrom}{#echo "%02d.%02d.%04d" % ($invoice.workPeriod.fromDate[2],$invoice.workPeriod.fromDate[1],$invoice.workPeriod.fromDate[0])#}
+#else
+    \newcommand{\workPeriodFrom}{}
+#end if
+
+#if $varExists('invoice.workPeriod.toDate')
+    \newcommand{\workPeriodTo}{#echo "%02d.%02d.%04d" % ($invoice.workPeriod.toDate[2],$invoice.workPeriod.toDate[1],$invoice.workPeriod.toDate[0])#}
+#else
+    \newcommand{\workPeriodTo}{}
+#end if
+
+%g-brief2 Anpassungen
+\def\ihrzeichentext{\footnotesize\textsc{Rechnungsnummer}}
+\def\ihrschreibentext{\footnotesize\textsc{Kundennummer}}
+\def\meinzeichentext{\footnotesize\textsc{Leistungszeitraum}}
+\def\datumtext{\footnotesize\textsc{Rechnungsdatum}}
+\advance\topmargin by 5.0mm
+\setlength\textheight{163.88mm}
+\setlength\headsep{10mm}
+
+%Absende Daten
+\Name                {\hfill \includegraphics{logo.pdf}}
+\NameZeileA          {$getVar('sender.name','-')}
+\NameZeileC          {\protect\makebox[5em][l]{Steuer-Nr}$getVar('sender.taxID','-')}
+\NameZeileD          {\protect\makebox[5em][l]{UST-IdNr}$getVar('sender.vatID','-')}
+\AdressZeileA        {$getVar('sender.street','-')}
+\AdressZeileB        {$getVar('sender.zip','-') $getVar('sender.city','-')}
+\AdressZeileD        {\protect\makebox[2em][l]{Tel}$getVar('sender.tel','-')}
+\AdressZeileE        {\protect\makebox[2em][l]{Fax}$getVar('sender.fax','-')}
+\InternetZeileA      {$getVar('sender.email','-')}
+\InternetZeileB      {$getVar('sender.website','-')}
+\BankZeileA          {$getVar('sender.bankName','-')}
+\BankZeileB          {\protect\makebox[3em][l]{BLZ}$getVar('sender.blz','-')}
+\BankZeileC          {\protect\makebox[3em][l]{Kto}$getVar('sender.kto','-')}
+\BankZeileD          {\protect\makebox[3em][l]{IBAN}$getVar('sender.iban','-')}
+\BankZeileE          {\protect\makebox[3em][l]{BIC}$getVar('sender.bic','-')}
+
+%Sonstige Daten
+\Gruss               {}{1cm}
+\Betreff             {Rechnung vom \todayIV}
+\Datum               {\today}
+\Anlagen             {Es gelten unsere allgemeinen Zahlungs- und Lieferbedingungen.\\\textbf{Zahlungsart: Überweisung Bank}}
+
+
+#if $print == True
+%Brief auf totem Baum
+\fenstermarken
+\faltmarken
+\lochermarke
+\RetourAdresse{\namezeilea\hspace*{0mm} - \adresszeilea\hspace*{0mm} - \adresszeileb\hspace*{0mm}}
+#end if
+
+%Kundenadresse
+#try
+    #if 'name2' in $invoice.customer and $invoice.customer.name2 != ""
+        \Adresse{$getVar('invoice.customer.name', 'invoice.customer.name not found') \\ $invoice.customer.name2 \\ $getVar('invoice.customer.street', 'invoice.customer.street not found') \\ $getVar('invoice.customer.zip', 'invoice.customer.zip not found') $getVar('invoice.customer.city', 'invoice.customer.city not found')}
+    #else
+        \Adresse{$getVar('invoice.customer.name', 'invoice.customer.name not found') \\ $getVar('invoice.customer.street', 'invoice.customer.street not found') \\ $getVar('invoice.customer.zip', 'invoice.customer.zip not found') $getVar('invoice.customer.city', 'invoice.customer.city not found')}
+    #end if
+#except NotFound
+    \Adresse{invoice.customer data missing}
+#end try
+
+%Rechnungsdaten
+\IhrZeichen{$getVar('invoice.invoiceNumber', '-')}
+\IhrSchreiben{$getVar('invoice.customer.customerNumber', '-')}
+\MeinZeichen{\workPeriod}
+
+%Document begin
+\begin{document}
+\begin{g-brief}
+\begin{Rechnung}[N]
+\Steuersatz{19}{7}
+\Waehrung{\euro{}}
+
+%Artikel
+#if $varExists('invoice.articles')
+    #for $article in $invoice.articles
+        #if 'count' in $article and 'description' in $article and 'price' in $article
+            \Artikel{#echo "%.2f"%float($article.count)#}{$article.description}{#echo "%.2f"%float($article.price)#}
+        #else
+            \Artikel{0}{BROKEN ARTICLE}{0}
+        #end if
+    #end for
+#else
+    \Artikel{0}{NO ARTICLES}{0}
+#end if
+
+%Document end
+\end{Rechnung}
+\end{g-brief}
+\end{document}
+\endinput

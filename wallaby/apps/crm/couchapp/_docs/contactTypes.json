@@ -1,0 +1,10 @@
+{
+   "_id": "contactTypes",
+   "titles": [
+       "-",
+       "email",
+       "telefon",
+       "handy",
+       "fax"
+   ]
+}
