@@ -9,7 +9,7 @@ from wallaby.pf.peer.database import *
 from wallaby.pf.peer.viewer import *
 from wallaby.pf.peer.multiViewer import *
 from wallaby.pf.peer.editDocument import *
-from wallaby.pf.peer.embeddedViewer import *
+from wallaby.pf.peer.documentChanger import *
 
 from datetime import date
 
@@ -25,7 +25,7 @@ class Tickets(Room):
 
     Sending = [
         Database.In.SaveDocument,
-        EmbeddedViewer.In.Add
+        DocumentChanger.In.InsertRow
     ]
 
     def __init__(self, name):
@@ -133,7 +133,7 @@ class Tickets(Room):
             }
 
             if not single and self._state in ('Edit', 'New', 'Dirty'):
-                self._invoiceContext.throw(EmbeddedViewer.In.Add, ("articles", article) )
+                self._invoiceContext.throw(DocumentChanger.In.InsertRow, ("articles", article) )
             else:
                 newArticles.append(article)
 
@@ -160,7 +160,7 @@ class Tickets(Room):
             newArticles = [article]
 
             if self._state in ('Edit', 'New', 'Dirty'):
-                self._invoiceContext.throw(EmbeddedViewer.In.Add, ("articles", article) )
+                self._invoiceContext.throw(DocumentChanger.In.InsertRow, ("articles", article) )
 
         if self._state in ('Edit', 'New', 'Dirty'):
             return
