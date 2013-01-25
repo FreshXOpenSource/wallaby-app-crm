@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(name='wallaby-app-crm',
-      version='0.1.35',
+      version='0.1.36',
       url='http://freshx.de/wallaby/apps/crm',
       author='FreshX GbR',
       author_email='wallaby@freshx.de',
